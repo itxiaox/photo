@@ -4,11 +4,15 @@
     实现仿微信多图片选择效果
 [参考文档](README_zh.md)
 
+[参考来源](https://github.com/lovetuzitong/MultiImageSelector)
+
 ###截图
 ![Example1](art/example_1.png) ![Select1](art/select_1.png) ![Select2](art/select_2.png) ![Select3](art/select_3.png)
 ## mode 2: sys_camera
     
+
+	
 	Android调用系统拍照、图库功能
    * 解决了Android 7.0适配问题：FileProvider的问题
    
- [参考来源](https://github.com/lovetuzitong/MultiImageSelector)
+ 
