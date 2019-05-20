@@ -111,4 +111,10 @@
         android:onClick="sysAlbum"
         android:text="调用系统相册"/>
 
+    <ImageView
+        android:id="@+id/iv_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
 </LinearLayout>

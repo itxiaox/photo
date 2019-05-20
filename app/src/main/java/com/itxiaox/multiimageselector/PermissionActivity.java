@@ -16,7 +16,6 @@ import android.widget.Toast;
 public class PermissionActivity extends Activity {
 
     private static final int REQUEST_PERMISSIONS = 991;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,6 +1,8 @@
 package com.itxiaox.multiimageselector;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -9,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -19,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.itxiaox.multi_image_selector.MultiImageSelectorActivity;
+import com.itxiaox.sys_camera.utils.ConvertUtils;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup mChoiceMode, mShowCamera;
     private EditText mRequestNum;
 
+    private ImageView iv_show;
     private ArrayList<String> mSelectPath;
 
     @Override
@@ -37,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        iv_show = findViewById(R.id.iv_show);
         mResultText = (TextView) findViewById(R.id.result);
         mChoiceMode = (RadioGroup) findViewById(R.id.choice_mode);
         mShowCamera = (RadioGroup) findViewById(R.id.show_camera);
@@ -158,10 +164,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void sysCamera() {
 
-        PhotoHelper.build().openSysCamera(this,new ResultListener<File>() {
+        PhotoHelper.build()
+                .enableCrop(true)
+                .openSysCamera(this,new ResultListener<File>() {
             @Override
             public void onSuccess(File filePath) {
                 Log.i(TAG, "sysCamera-onSuccess: filePath="+filePath);
+                Bitmap bitmap = getSmallBitmap(filePath.getAbsolutePath(),200,300);
+
+                //解决拍照旋转问题
+                int degree = ConvertUtils.getPictureDegree(filePath.getAbsolutePath());
+                Log.i(TAG, "onSuccess: degree="+degree);
+                iv_show.setImageBitmap(ConvertUtils.rotateBitmap(bitmap,degree));
             }
 
             @Override
@@ -177,6 +191,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(File filePath) {
                 Log.i(TAG, "sysAlbum-onSuccess: filePath="+filePath);
+
+                Bitmap bitmap = getSmallBitmap(filePath.getAbsolutePath(),200,300);
+                int degree = ConvertUtils.getPictureDegree(filePath.getAbsolutePath());
+                Log.i(TAG, "onSuccess: degree="+degree);
+                iv_show.setImageBitmap(ConvertUtils.rotateBitmap(bitmap,degree));
             }
 
             @Override
@@ -185,5 +204,34 @@ public class MainActivity extends AppCompatActivity {
                         "sysAlbum-onFail: filePath="+error);
             }
         });
+    }
+
+    public static Bitmap getSmallBitmap(String filePath, int width, int height) {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+
+        // 计算 缩略图大小为原始图片大小的几分之一 inSampleSize:缩略图大小为原始图片大小的几分之一
+        options.inSampleSize = calculateInSampleSize(options, width, height);
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(filePath, options);
+    }
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+
+
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+
+        }
+        return inSampleSize;
+
     }
 }

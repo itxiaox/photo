@@ -1,12 +1,15 @@
 package com.itxiaox.sys_camera;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentValues;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 
@@ -87,7 +90,11 @@ public class PhotoHelper {
                 }else {
                     data = Uri.fromFile(saveFile);
                 }
-                handleResult(data);
+                if (enableCrop) {
+                    cropPic(data, resultListener);
+                } else {
+                    handleResult(data);
+                }
             }
         });
     }
@@ -132,9 +139,11 @@ public class PhotoHelper {
         RxOnResult rxOnResult = new RxOnResult(mActivity);
         rxOnResult.startForResult(cropIntent, new RxOnResult.Callback() {
             @Override
-            public void onActivityResult(int resultCode, Intent data) {
-
+            public void onActivityResult(int resultCode, Intent intent) {
                 //todo 剪裁完成
+                if (intent == null) return;
+                Uri data = intent.getData();
+                handleResult(data);
             }
         });
     }
@@ -152,7 +161,11 @@ public class PhotoHelper {
             @Override
             public void onActivityResult(int resultCode, Intent data) {
                 Uri uri = data.getData();
-                handleResult(uri);
+                if (enableCrop) {
+                    cropPic(uri, resultListener);
+                } else {
+                    handleResult(uri);
+                }
             }
         });
     }
@@ -164,13 +177,10 @@ public class PhotoHelper {
                 resultListener.onFail("data is null");
             return;
         }
-        if(enableCrop){
-            cropPic(Uri.fromFile(saveFile) , resultListener);
-        }else {
-            if(resultListener!=null)
-                resultListener.onSuccess(saveFile);
-        }
-
+        String filePath = ConvertUtils.getPathFromUri(mActivity, data);
+        saveFile = new File(filePath);
+        if (resultListener != null)
+            resultListener.onSuccess(saveFile);
     }
 
 
