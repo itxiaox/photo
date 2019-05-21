@@ -20,3 +20,5 @@
 
 
 博客 [Google封装类CameraView的使用](https://www.jianshu.com/p/eb095f925ef4)
+
+## [CameraX](https://developer.android.com/training/camerax?hl=zh-CN)
