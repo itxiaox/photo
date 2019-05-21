@@ -21,4 +21,21 @@
 
 博客 [Google封装类CameraView的使用](https://www.jianshu.com/p/eb095f925ef4)
 
+增加将libary上传到bintray仓库，方便使用：
+
+```
+
+	allprojects {
+		repositories {
+			jcenter()
+			maven {
+				url = "https://dl.bintray.com/itxiaox/android"
+			}
+		}
+	}
+	compile 'com.itxiaox:cameraview:1.0.0'
+	
+```
+
+
 ## [CameraX](https://developer.android.com/training/camerax?hl=zh-CN)

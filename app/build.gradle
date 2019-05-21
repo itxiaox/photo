@@ -24,4 +24,5 @@ dependencies {
     implementation project(':multi-image-selector')
     implementation project(':sys_camera')
 //    compile 'com.itxiaox:multi-image-selector:1.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 }
