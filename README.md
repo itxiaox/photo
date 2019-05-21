@@ -16,4 +16,7 @@
 	Android调用系统拍照、图库功能
    * 解决了Android 7.0适配问题：FileProvider的问题
    
- 
+## [CameraView](https://github.com/itxiaox/cameraview)
+
+
+博客 [Google封装类CameraView的使用](https://www.jianshu.com/p/eb095f925ef4)
