@@ -234,4 +234,8 @@ public class MainActivity extends AppCompatActivity {
         return inSampleSize;
 
     }
+
+    public void goCameraView(View view) {
+        startActivity(new Intent(this,CameraActivity.class));
+    }
 }

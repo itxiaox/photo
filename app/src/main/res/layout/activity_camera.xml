@@ -8,16 +8,32 @@
     tools:context="com.itxiaox.multiimageselector.CameraActivity">
 
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="camera"/>
+
+   <LinearLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content">
+       <Button
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="开始"
+           android:onClick="start"/>
+       <Button
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="停止"
+           android:onClick="stop"/>
+       <Button
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="拍照"
+           android:onClick="camera"/>
+   </LinearLayout>
 
     <ImageView
         android:id="@+id/iv_show"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:src="@drawable/ic_menu_back"/>
+        android:src="@mipmap/ic_launcher"/>
     <com.google.android.cameraview.CameraView
         android:id="@+id/camera"
         android:layout_width="match_parent"
