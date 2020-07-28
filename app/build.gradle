@@ -21,8 +21,10 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation project(':multi-picture')
-    implementation project(':picture')
+//    implementation project(':multi-picture')
+//    implementation project(':picture')
+    implementation "com.github.itxiaox.photo:multi-picture:0.0.5"
+    implementation "com.github.itxiaox.photo:picture:0.0.5"
 //    implementation 'com.itxiaox:cameraview:1.0.0'
 //    compile 'com.itxiaox:multi-image-selector:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

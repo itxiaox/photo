@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.itxiaox.multi_image_selector.MultiPhotoUtils;
 import com.itxiaox.multi_image_selector.MultiResultListener;
@@ -100,7 +101,9 @@ public class MainActivity extends AppCompatActivity {
             maxNum = Integer.valueOf(mRequestNum.getText().toString());
         }
 
-        MultiPhotoUtils.build()
+        MultiPhotoUtils
+                .build()
+                //选择的结果回调
                 .callback(new MultiResultListener<String>() {
                     @Override
                     public void onSuccess(List<String> filePath) {
@@ -114,11 +117,16 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFail(String error) {
-
+                        Toast.makeText(MainActivity.this, "失败："+error, Toast.LENGTH_SHORT).show();
                     }
-                }).enableCamera(showCamera)
+                })
+                //是否支持拍照，默认支持
+                .enableCamera(showCamera)
+                //最多图片数，默认为9张，九宫格
                 .maxPictures(maxNum)
+                //图片选择模式：0：单选；1：多选，默认多选
                 .selectMode(selectedMode)
+                //显示，必须调用
                 .show(MainActivity.this);
     }
 
@@ -155,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
     public void sysCamera() {
 
         PhotoHelper.build()
+                //是否剪裁
                 .enableCrop(true)
                 .openSysCamera(this, new ResultListener<File>() {
                     @Override
@@ -177,7 +186,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void sysAlbum() {
         type = "album";
-        PhotoHelper.build().openSysAlbum(this, new ResultListener<File>() {
+        PhotoHelper.build()
+                .openSysAlbum(this, new ResultListener<File>() {
             @Override
             public void onSuccess(File filePath) {//返回选中的图片路径
 
