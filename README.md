@@ -6,7 +6,7 @@
 
 ###截图
 
-![Example1](img/example_1.png) ![Select1](img/select_1.png) ![Select2](img/select_2.png) ![Select3](img/select_3.png)
+![Example1](img/photo_test.jpg) ![Select1](img/mulit_picture.jpg) ![Select2](img/picture_camera.jpg) ![Select3](img/picture_crop.jpg)
 ## mode 2: picture
 	Android调用系统拍照、图库功能
    * 解决了Android 7.0适配问题：FileProvider的问题
