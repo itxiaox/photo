@@ -17,10 +17,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".PermissionActivity"
-            android:theme="@android:style/Theme.Translucent" />
-        <activity android:name=".CameraActivity"/>
+<!--        <activity android:name=".CameraActivity"/>-->
     </application>
 
 </manifest>

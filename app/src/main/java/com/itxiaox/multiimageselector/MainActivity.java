@@ -1,10 +1,17 @@
 package com.itxiaox.multiimageselector;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.TextUtils;
@@ -20,6 +27,13 @@ import android.widget.Toast;
 
 import com.itxiaox.multi_image_selector.MultiPhotoUtils;
 import com.itxiaox.multi_image_selector.MultiResultListener;
+import com.itxiaox.permission.annotation.NeedsPermission;
+import com.itxiaox.permission.annotation.OnNeverAskAgain;
+import com.itxiaox.permission.annotation.OnPermissionDenied;
+import com.itxiaox.permission.annotation.OnShowRationale;
+import com.itxiaox.permission.library.PermissionDialog;
+import com.itxiaox.permission.library.PermissionManager;
+import com.itxiaox.permission.library.listener.PermissionRequest;
 import com.itxiaox.photo.PhotoHelper;
 import com.itxiaox.photo.ResultListener;
 
@@ -35,12 +49,12 @@ import com.itxiaox.photo.utils.ConvertUtils;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private static final int REQUEST_IMAGE = 2;
-
     private TextView mResultText;
     private RadioGroup mChoiceMode, mShowCamera;
     private EditText mRequestNum;
-
+    String[] permissions = new String[]{Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE};
     private ImageView iv_show;
 
     @Override
@@ -69,10 +83,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                selectPicture();
                 type = "selectPicture";
-                startActivityForResult(new Intent(MainActivity.this, PermissionActivity.class), 1);
-
+                PermissionManager.request(MainActivity.this, permissions);
 
             }
         });
@@ -85,6 +97,48 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
     }
+
+    @NeedsPermission
+    public void needPermission() {
+        switch (type) {
+            case "selectPicture":
+                selectPicture();
+                break;
+            case "camera":
+                sysCamera();
+                break;
+            case "album":
+                sysAlbum();
+                break;
+        }
+    }
+
+    @OnPermissionDenied
+    public void permissionDenied() {
+        Toast.makeText(MainActivity.this, "没有权限", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 权限说明的拒绝，一般这里可以采用一个对话框说明该权限的作用
+     *
+     * @param request
+     */
+    @OnShowRationale()
+    void showRationaleForCamera(final PermissionRequest request) {
+        PermissionDialog.showRationale(this,request,"权限说明","拍照需要此权限，否则不能进行拍照");
+    }
+
+    @OnNeverAskAgain()
+    void onNeverAgain() {
+        PermissionDialog.showNeverAgain(this,"权限已拒绝","您已经拒绝了此权限");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionManager.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
 
     private void selectPicture() {
         int selectedMode = MultiImageSelectorActivity.MODE_MULTI;
@@ -117,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFail(String error) {
-                        Toast.makeText(MainActivity.this, "失败："+error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "失败：" + error, Toast.LENGTH_SHORT).show();
                     }
                 })
                 //是否支持拍照，默认支持
@@ -130,33 +184,20 @@ public class MainActivity extends AppCompatActivity {
                 .show(MainActivity.this);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if ("camera".equals(type)) {
-                sysCamera();
-            } else if ("album".equals(type)) {
-                sysAlbum();
-            } else if ("selectPicture".equals(type)) {
-                selectPicture();
-            }
-        }
-
-    }
 
 
     private String type = "camera";
 
     public void sysCamera(View view) {
         type = "camera";
-        startActivityForResult(new Intent(this, PermissionActivity.class), 1);
-
+//        startActivityForResult(new Intent(this, PermissionActivity.class), 1);
+        PermissionManager.request(this, permissions);
     }
 
     public void sysAlbum(View view) {
         type = "album";
-        startActivityForResult(new Intent(this, PermissionActivity.class), 1);
+        PermissionManager.request(this, permissions);
+//        startActivityForResult(new Intent(this, PermissionActivity.class), 1);
     }
 
 
@@ -188,19 +229,19 @@ public class MainActivity extends AppCompatActivity {
         type = "album";
         PhotoHelper.build()
                 .openSysAlbum(this, new ResultListener<File>() {
-            @Override
-            public void onSuccess(File filePath) {//返回选中的图片路径
+                    @Override
+                    public void onSuccess(File filePath) {//返回选中的图片路径
 
-                Bitmap bitmap = BitmapUtils.getSmallBitmap(filePath.getAbsolutePath(), 200, 300);
-                int degree = ConvertUtils.getPictureDegree(filePath.getAbsolutePath());
-                iv_show.setImageBitmap(ConvertUtils.rotateBitmap(bitmap, degree));
-            }
+                        Bitmap bitmap = BitmapUtils.getSmallBitmap(filePath.getAbsolutePath(), 200, 300);
+                        int degree = ConvertUtils.getPictureDegree(filePath.getAbsolutePath());
+                        iv_show.setImageBitmap(ConvertUtils.rotateBitmap(bitmap, degree));
+                    }
 
-            @Override
-            public void onFail(String error) {
-                Log.i(TAG, "sysAlbum-onFail: filePath=" + error);
-            }
-        });
+                    @Override
+                    public void onFail(String error) {
+                        Log.i(TAG, "sysAlbum-onFail: filePath=" + error);
+                    }
+                });
     }
 
 
